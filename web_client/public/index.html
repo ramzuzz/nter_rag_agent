@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>NTER AI Agent</title>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body style="font-family: Arial; max-width: 800px; margin: 20px auto;">
+    <h2>ИИ-Ассистент NTER (Строительные нормы)</h2>
+
+    <div id="chat" style="height: 750px; border: 1px solid #ccc; border-radius: 5px; padding: 15px; overflow-y: auto; margin-bottom: 15px; background: #f9f9f9;"></div>
+
+    <div style="display: flex; gap: 10px;">
+        <input type="text" id="query" placeholder="Например: Какие требования к каскам?" style="flex-grow: 1; padding: 10px;">
+        <button id="sendBtn" onclick="sendMessage()" style="padding: 10px 20px; cursor: pointer;">Отправить</button>
+    </div>
+
+    <script>
+        const socket = io();
+        const chat = document.getElementById('chat');
+        const input = document.getElementById('query');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // Слушаем ответы от сервера
+        socket.on('chat_response', (msg) => {
+
+            const formattedMsg = marked.parse(msg);
+
+            chat.innerHTML += `<div style="margin-bottom: 10px; color: #333; line-height: 1.5;"><b>Агент NTER:</b> <br>${formattedMsg}</div>`;
+
+            chat.scrollTop = chat.scrollHeight; // Автопрокрутка вниз
+
+            input.disabled = false;
+            sendBtn.disabled = false;
+            sendBtn.innerText = 'Отправить';
+            input.focus();
+        });
+
+        // Отправка сообщения
+        function sendMessage() {
+            const text = input.value.trim();
+            if (!text) return;
+
+            input.disabled = true;
+            sendBtn.disabled = true;
+            sendBtn.innerText = 'Думает...';
+
+            chat.innerHTML += `<div style="margin-bottom: 10px; color: #0056b3;"><b>Вы:</b> ${text}</div>`;
+            socket.emit('chat_message', text);
+            input.value = '';
+        }
+
+        // Отправка по кнопке Enter
+        input.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+# Секреты и ключи API (КРИТИЧЕСКИ ВАЖНО)
+.env
+
+# Базы данных RAG
+chroma_db/
+bm25_index.pkl
+
+# Виртуальное окружение
+.venv/
+venv/
+env/
+
+# Кэш Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Настройки PyCharm
+.idea/
+
+# Зависимости Node.js (фронтенд)
+web_client/node_modules/
